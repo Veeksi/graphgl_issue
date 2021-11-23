@@ -73,7 +73,9 @@ mixin GqlQuery {
   static String charactersQuery = '''
     query (\$page: Int!){
       characters(page: \$page){
+        __typename
         results {
+          id
           name
         }
       }

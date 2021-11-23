@@ -30,6 +30,10 @@ class CharacterDatasource implements ICharacterDatasource {
     print('DEBUG: ----------------------------------------\n');
     print('DEBUG: ${[result.data, result.exception]}');
 
+    if (result.data == null) {
+      return [];
+    }
+
     final List<CharacterModel> models = result.data?['characters']['results']
         .map((e) => CharacterModel.fromJson(e))
         .cast<CharacterModel>()

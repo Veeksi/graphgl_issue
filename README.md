@@ -1,8 +1,9 @@
 # Graphql_test
 
 ## Problem
-1. Fetch online with cacheAndNetwork fetchpolicy -> Use network -> Get data
-2. Fetch offline with same fetchpolicy -> Use cache -> No data
+1. Fetch online with cacheAndNetwork fetchpolicy -> Uses network -> Gets data
+2. Fetch offline with same fetchpolicy -> Uses network -> No data
+3. Fetch offline with cacheOnly fetchpolicy -> Uses cache -> Gets data
 
 ## Getting Started
 

@@ -1,6 +1,8 @@
-# graphql_test
+# Graphql_test
 
-A new Flutter project.
+## Problem
+1. Fetch online with cacheAndNetwork fetchpolicy -> Use network -> Get data
+2. Fetch offline with same fetchpolicy -> Use cache -> No data
 
 ## Getting Started
 

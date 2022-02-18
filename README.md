@@ -1,11 +1,29 @@
-# Graphql_test
+# Graphql_issue
+
+This repository is made due to this [issue](https://github.com/zino-hofmann/graphql-flutter/issues/1046)
 
 ## Problem
-1. Fetch online with cacheAndNetwork fetchpolicy -> Uses network -> Gets data
-2. Fetch offline with same fetchpolicy -> Uses network -> No data
-3. Fetch offline with cacheOnly fetchpolicy -> Uses cache -> Gets data
+1. Fetch all todos
+2. Create one todo by clicking "+1" symbol
+3. Fetch all todos again by clicking refresh icon
+4. Created todo do not appear (THE ISSUE)
+5. Fetch all todos second time
+6. Created todo appears now
 
 ## Getting Started
+
+Download go if needed [tutorial](https://www.freecodecamp.org/news/setting-up-go-programming-language-on-windows-f02c8c14e2f/)
+
+Run go server
+```
+cd server
+go run server.go
+```
+
+Open flutter application
+```
+flutter run
+```
 
 If there are auto-generated files that cause conflicts please run script below: 
 ```

@@ -25,6 +25,8 @@ Open flutter application
 flutter run
 ```
 
+Note: Remember to change the lib/injection/register_module.dart http link to match yours
+
 If there are auto-generated files that cause conflicts please run script below: 
 ```
 flutter pub run build_runner watch --delete-conflicting-outputs

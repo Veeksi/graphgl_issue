@@ -8,6 +8,9 @@ abstract class RegisterModule {
         cache: GraphQLCache(
           store: HiveStore(),
         ),
-        link: HttpLink('https://rickandmortyapi.com/graphql'),
+        // Put your local ip - you can find it by opening cmd and typing "ipconfig"
+        // And checking adapter ethernet adapter field
+        link: HttpLink('http://192.168.1.35:8080/query'),
       );
 }
+// https://rickandmortyapi.com/graphql

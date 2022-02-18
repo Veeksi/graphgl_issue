@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:graphql_test/bloc/character_bloc.dart';
+import 'package:graphql_test/bloc/character/character_bloc.dart';
+import 'package:graphql_test/bloc/todo/todo_bloc.dart';
 import 'package:graphql_test/injection/injection.dart';
 import 'package:injectable/injectable.dart';
 
@@ -17,8 +19,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<CharacterBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => getIt<CharacterBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<TodoBloc>(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
@@ -43,7 +52,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
-    context.read<CharacterBloc>().add(FetchCharactersEvent());
+    context.read<TodoBloc>().add(FetchTodosEvent());
     super.initState();
   }
 
@@ -52,14 +61,35 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.read<TodoBloc>().add(FetchTodosEvent());
+            },
+            icon: const Icon(Icons.refresh),
+          ),
+          IconButton(
+            onPressed: () {
+              context.read<TodoBloc>().add(
+                    const AddTodoEvent(text: 'Created todo', userId: '2'),
+                  );
+            },
+            icon: const Icon(Icons.plus_one),
+          ),
+        ],
       ),
-      body: BlocBuilder<CharacterBloc, CharacterState>(
+      body: BlocConsumer<TodoBloc, TodoState>(
+        listener: (context, state) {
+          if (state.status == TodoStatus.todoAdded) {
+            ToastUtil.displayToast();
+          }
+        },
         builder: (context, state) {
           return Center(
             child: ListView.builder(
-              itemCount: state.characters.length,
+              itemCount: state.todos.length,
               itemBuilder: (context, i) {
-                return ListTile(title: Text(state.characters[i].name));
+                return ListTile(title: Text(state.todos[i].text));
               },
             ),
           );
@@ -81,4 +111,44 @@ mixin GqlQuery {
       }
     }
   ''';
+
+  static String todoQuery = '''
+    query todoQuery {
+      __typename
+      todos {
+        __typename
+        id
+        text
+        done
+      }
+    }
+  ''';
+
+  static String todoMutation = '''
+    mutation(\$text: String!, \$userId: String!) {
+      createTodo(input: {
+        text: \$text
+        userId: \$userId
+      }) {
+        id
+        text
+        done
+      }
+    }
+  ''';
+}
+
+class ToastUtil {
+  static void displayToast([String? message]) {
+    // Cancels previous error if there is any
+    Fluttertoast.cancel();
+
+    Fluttertoast.showToast(
+      msg: 'Todo added',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
 }

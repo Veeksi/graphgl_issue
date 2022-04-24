@@ -1,6 +1,6 @@
 # Graphql_issue
 
-This repository is made due to this [issue](https://github.com/zino-hofmann/graphql-flutter/issues/1046)
+This repository is made due to this [issue](https://github.com/zino-hofmann/graphql-flutter/issues/1117)
 
 ## Problem
 1. Fetch all todos -> (Empty list at start)

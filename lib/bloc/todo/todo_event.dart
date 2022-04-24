@@ -9,6 +9,14 @@ abstract class TodoEvent extends Equatable {
 
 class FetchTodosEvent extends TodoEvent {}
 
+class TodoListChangedEvent extends TodoEvent {
+  const TodoListChangedEvent({
+    required this.todos,
+  });
+  
+  final List<Todo> todos;
+}
+
 class AddTodoEvent extends TodoEvent {
   const AddTodoEvent({
     required this.text,

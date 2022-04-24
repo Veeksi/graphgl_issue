@@ -3,12 +3,9 @@
 This repository is made due to this [issue](https://github.com/zino-hofmann/graphql-flutter/issues/1046)
 
 ## Problem
-1. Fetch all todos
-2. Create one todo by clicking "+1" symbol
-3. Fetch all todos again by clicking refresh icon
-4. Created todo do not appear (THE ISSUE)
-5. Fetch all todos second time
-6. Created todo appears now
+1. Fetch all todos -> (Empty list at start)
+2. Create one todo by clicking "+1" symbol -> (Empty list still)
+3. Fetch all todos again by clicking refresh icon -> (Todo gets added)
 
 ## Getting Started
 

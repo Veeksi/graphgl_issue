@@ -5,7 +5,7 @@ import 'package:graphql_test/main.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class ITodoDatasource {
-  Future<List<Todo>> getTodos();
+  ObservableQuery<Object?> getTodos();
   Future<Todo> createTodo(String text, String userId);
 }
 
@@ -16,30 +16,17 @@ class CharacterDatasource implements ITodoDatasource {
   final GraphQLClient _client;
 
   @override
-  Future<List<Todo>> getTodos() async {
-    final result = await _client.query(
-      QueryOptions(
+  ObservableQuery<Object?> getTodos() {
+    final observableQuery = _client.watchQuery(
+      WatchQueryOptions(
         document: gql(GqlQuery.todoQuery),
         fetchPolicy: FetchPolicy.cacheAndNetwork,
+        fetchResults: true,
+        optimisticResult: QueryResultSource.optimisticResult,
       ),
     );
 
-    print('DEBUG: ${[result.source, result.exception]}');
-    print('DEBUG: ----------------------------------------\n');
-    print('DEBUG: ${[result.data, result.exception]}');
-
-    if (result.data == null) {
-      return [];
-    }
-
-    final List<TodoModel> models = result.data?['todos']
-        .map((e) => TodoModel.fromJson(e))
-        .cast<TodoModel>()
-        .toList();
-
-    final data = models.map<Todo>((e) => e.toEntity()).toList();
-
-    return data;
+    return observableQuery;
   }
 
   @override
@@ -54,10 +41,6 @@ class CharacterDatasource implements ITodoDatasource {
         fetchPolicy: FetchPolicy.cacheAndNetwork,
       ),
     );
-
-    print('DEBUG: ${[result.source, result.exception]}');
-    print('DEBUG: ----------------------------------------\n');
-    print('DEBUG: ${[result.data, result.exception]}');
 
     if (result.data == null) {
       throw Exception();

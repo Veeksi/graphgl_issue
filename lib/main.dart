@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:graphql_test/bloc/character/character_bloc.dart';
 import 'package:graphql_test/bloc/todo/todo_bloc.dart';
 import 'package:graphql_test/injection/injection.dart';
 import 'package:injectable/injectable.dart';
@@ -19,15 +17,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => getIt<CharacterBloc>(),
-        ),
-        BlocProvider(
-          create: (context) => getIt<TodoBloc>(),
-        ),
-      ],
+    return BlocProvider(
+      create: (context) => getIt<TodoBloc>(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
@@ -78,12 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: BlocConsumer<TodoBloc, TodoState>(
-        listener: (context, state) {
-          if (state.status == TodoStatus.todoAdded) {
-            ToastUtil.displayToast();
-          }
-        },
+      body: BlocBuilder<TodoBloc, TodoState>(
         builder: (context, state) {
           return Center(
             child: ListView.builder(
@@ -119,7 +105,6 @@ mixin GqlQuery {
         __typename
         id
         text
-        done
       }
     }
   ''';
@@ -130,25 +115,10 @@ mixin GqlQuery {
         text: \$text
         userId: \$userId
       }) {
+        __typename
         id
         text
-        done
       }
     }
   ''';
-}
-
-class ToastUtil {
-  static void displayToast([String? message]) {
-    // Cancels previous error if there is any
-    Fluttertoast.cancel();
-
-    Fluttertoast.showToast(
-      msg: 'Todo added',
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-  }
 }

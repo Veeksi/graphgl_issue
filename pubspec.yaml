@@ -34,10 +34,7 @@ dependencies:
   flutter_bloc: ^8.0.0
   fluttertoast: ^8.0.8
   get_it: ^7.2.0
-  graphql_flutter:
-    git:
-      url: https://github.com/zino-hofmann/graphql-flutter.git
-      path: packages/graphql_flutter
+  graphql_flutter: ^5.1.0
   hive: ^2.0.4
   injectable: ^1.5.0
   platform: ^3.1.0

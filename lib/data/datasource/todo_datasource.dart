@@ -40,9 +40,11 @@ class CharacterDatasource implements ITodoDatasource {
         },
         fetchPolicy: FetchPolicy.cacheAndNetwork,
         update: (cache, result) {
+          // We don't wanna update cache nor handle error throwing here
           if (result != null && result.hasException) {
-            throw Exception();
+            return;
           }
+
           final queryRequest = Operation(
             document: parseString(GqlQuery.todoQuery),
           ).asRequest();
@@ -60,6 +62,7 @@ class CharacterDatasource implements ITodoDatasource {
     );
 
     if (result.hasException) {
+      print('DEBUG: Exception ${result.exception}');
       throw Exception();
     }
 

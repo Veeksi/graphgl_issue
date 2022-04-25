@@ -4,6 +4,8 @@ enum TodoStatus {
   loading,
   data,
   error,
+  updateError,
+  addingTodo,
   todoAdded,
 }
 

@@ -38,13 +38,11 @@ class TodoRepository implements ITodoRepository {
     query.stream.listen((QueryResult result) {
       if (!result.isLoading && result.data != null) {
         if (result.hasException) {
-          throw Exception();
+          _controller.addError(result);
         }
         if (result.isLoading) {
           return;
         }
-
-        print('DEBUG: Result source ${result.source}');
 
         final List<TodoModel> todoModels = result.data?['todos']
             .map((e) => TodoModel.fromJson(e))

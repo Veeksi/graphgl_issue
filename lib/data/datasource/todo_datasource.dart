@@ -1,3 +1,4 @@
+import 'package:gql/language.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:graphql_test/domain/todo.dart';
 import 'package:graphql_test/domain/todo_model.dart';
@@ -22,7 +23,6 @@ class CharacterDatasource implements ITodoDatasource {
         document: gql(GqlQuery.todoQuery),
         fetchPolicy: FetchPolicy.cacheAndNetwork,
         fetchResults: true,
-        optimisticResult: QueryResultSource.optimisticResult,
       ),
     );
 
@@ -39,10 +39,27 @@ class CharacterDatasource implements ITodoDatasource {
           'userId': userId,
         },
         fetchPolicy: FetchPolicy.cacheAndNetwork,
+        update: (cache, result) {
+          if (result != null && result.hasException) {
+            throw Exception();
+          }
+          final queryRequest = Operation(
+            document: parseString(GqlQuery.todoQuery),
+          ).asRequest();
+
+          final data = _client.readQuery(queryRequest);
+
+          cache.writeQuery(queryRequest, data: {
+            "todos": [
+              ...data?['todos'],
+              result?.data?['createTodo'],
+            ],
+          });
+        },
       ),
     );
 
-    if (result.data == null) {
+    if (result.hasException) {
       throw Exception();
     }
 

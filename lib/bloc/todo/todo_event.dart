@@ -9,6 +9,8 @@ abstract class TodoEvent extends Equatable {
 
 class FetchTodosEvent extends TodoEvent {}
 
+class TodoListUpdateErrorEvent extends TodoEvent {}
+
 class TodoListChangedEvent extends TodoEvent {
   const TodoListChangedEvent({
     required this.todos,

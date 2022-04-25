@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gql/language.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:graphql_test/bloc/todo/todo_bloc.dart';
 import 'package:graphql_test/injection/injection.dart';
@@ -69,8 +71,20 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: BlocBuilder<TodoBloc, TodoState>(
+      body: BlocConsumer<TodoBloc, TodoState>(
+        listener: ((context, state) {
+          print('DEBUG: State status ${state.status}');
+          if (state.status == TodoStatus.error) {
+            ToastUtil.displayToast();
+          }
+          if (state.status == TodoStatus.updateError) {
+            ToastUtil.displayToast("Couldn't refresh todos");
+          }
+        }),
         builder: (context, state) {
+          if (state.status == TodoStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
           return Center(
             child: ListView.builder(
               itemCount: state.todos.length,
@@ -86,39 +100,47 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 mixin GqlQuery {
-  static String charactersQuery = '''
-    query (\$page: Int!){
-      characters(page: \$page){
-        __typename
-        results {
-          id
-          name
-        }
-      }
-    }
-  ''';
-
-  static String todoQuery = '''
+  static const todoQuery = '''
     query todoQuery {
-      __typename
       todos {
-        __typename
-        id
-        text
+        ...todoDetails
       }
     }
+    $todoFragment
   ''';
 
-  static String todoMutation = '''
+  static const todoMutation = '''
     mutation(\$text: String!, \$userId: String!) {
       createTodo(input: {
         text: \$text
         userId: \$userId
       }) {
-        __typename
         id
         text
       }
     }
   ''';
+
+  static const todoFragment = '''
+    fragment todoDetails on Todo {
+      __typename
+      id
+      text
+    }
+''';
+}
+
+class ToastUtil {
+  static void displayToast([String? message]) {
+    // Cancels previous error if there is any
+    Fluttertoast.cancel();
+
+    Fluttertoast.showToast(
+      msg: message ?? 'Network error, try again',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      textColor: Colors.white,
+      fontSize: 14.0,
+    );
+  }
 }

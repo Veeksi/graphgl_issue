@@ -1,7 +1,7 @@
-import 'package:gql/language.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:graphql_test/data/util/safe_api_call.dart';
 import 'package:graphql_test/domain/todo.dart';
-import 'package:graphql_test/domain/todo_model.dart';
+import 'package:graphql_test/data/dtos/todo_dto.dart';
 import 'package:graphql_test/main.dart';
 import 'package:injectable/injectable.dart';
 
@@ -12,61 +12,29 @@ abstract class ITodoDatasource {
 
 @LazySingleton(as: ITodoDatasource)
 class CharacterDatasource implements ITodoDatasource {
-  CharacterDatasource(this._client);
+  CharacterDatasource(this._safeApiCall);
 
-  final GraphQLClient _client;
+  final ISafeApiCall _safeApiCall;
 
   @override
   ObservableQuery<Object?> getTodos() {
-    final observableQuery = _client.watchQuery(
-      WatchQueryOptions(
-        document: gql(GqlQuery.todoQuery),
-        fetchPolicy: FetchPolicy.cacheAndNetwork,
-        fetchResults: true,
-      ),
-    );
-
-    return observableQuery;
+    return _safeApiCall.safeWatchQuery(GqlQuery.todoQuery);
   }
 
   @override
   Future<Todo> createTodo(String text, String userId) async {
-    final result = await _client.mutate(
-      MutationOptions(
-        document: gql(GqlQuery.todoMutation),
-        variables: {
-          'text': text,
-          'userId': userId,
-        },
-        fetchPolicy: FetchPolicy.cacheAndNetwork,
-        update: (cache, result) {
-          // We don't wanna update cache nor handle error throwing here
-          if (result != null && result.hasException) {
-            return;
-          }
-
-          final queryRequest = Operation(
-            document: parseString(GqlQuery.todoQuery),
-          ).asRequest();
-
-          final data = _client.readQuery(queryRequest);
-
-          cache.writeQuery(queryRequest, data: {
-            "todos": [
-              ...data?['todos'],
-              result?.data?['createTodo'],
-            ],
-          });
-        },
-      ),
+    final result = await _safeApiCall.safeMutation(
+      documentMutation: GqlQuery.todoMutation,
+      documentQuery: GqlQuery.todoQuery,
+      variables: {
+        'text': text,
+        'userId': userId,
+      },
+      oldData: 'todos',
+      newData: 'createTodo',
     );
 
-    if (result.hasException) {
-      print('DEBUG: Exception ${result.exception}');
-      throw Exception();
-    }
-
-    final TodoModel model = TodoModel.fromJson(result.data?['createTodo']);
+    final TodoDto model = TodoDto.fromJson(result.data?['createTodo']);
 
     final Todo entity = model.toEntity();
 

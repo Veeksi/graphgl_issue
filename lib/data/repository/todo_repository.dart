@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:graphql_test/data/datasource/todo_datasource.dart';
 import 'package:graphql_test/domain/todo.dart';
-import 'package:graphql_test/domain/todo_model.dart';
+import 'package:graphql_test/data/dtos/todo_dto.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class ITodoRepository {
@@ -44,9 +44,9 @@ class TodoRepository implements ITodoRepository {
           return;
         }
 
-        final List<TodoModel> todoModels = result.data?['todos']
-            .map((e) => TodoModel.fromJson(e))
-            .cast<TodoModel>()
+        final List<TodoDto> todoModels = result.data?['todos']
+            .map((e) => TodoDto.fromJson(e))
+            .cast<TodoDto>()
             .toList();
 
         final todoEntities = todoModels.map<Todo>((e) => e.toEntity()).toList();
